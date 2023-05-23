@@ -8,7 +8,7 @@ import os
 
 config = dotenv_values(".env")
 api_host = config["API_HOST"]
-api_key = config["API_KEY"]
+api_key = config["STABE_DIFFUSION_API_KEY"]
 engine_id = config["ENGINE_ID"]
 
 app = Flask(__name__)
@@ -33,14 +33,14 @@ def generate():
     name = gptj.chat_completion(messages_name)[
         'choices'][0]['message']['content']
 
-    image_path = generateImage(name)
+    image_path = generate_image(name)
     result = {"name": name, "description": description, "image": image_path}
 
     return jsonify(result)
 
 
 # Calls the Stable Diffusion API and generates an image for a product name
-def generateImage(product_name):
+def generate_image(product_name):
     prompt = "Please generate a featured image for the following product idea: " + product_name + \
         ". The product must be showcased in full size at the center of the image, with minimum distractive elements, and a simple monochromatic background."
     url = f"{api_host}/v1/generation/{engine_id}/text-to-image"
@@ -59,7 +59,6 @@ def generateImage(product_name):
     payload['steps'] = 50
 
     response = requests.post(url, headers=headers, json=payload)
-    # (check_and_create_filename(product_name+".png")).replace(" ", "_")
     filename = check_and_create_filename(product_name.replace(" ", "_")+".png")
     image_path = ""
 
@@ -85,7 +84,7 @@ def check_and_create_filename(filename):
 
     return new_filename
 
-# Start an http server and expose an api endpoint that takes in a prompt and returns an image.
+# Start an http server and expose the api endpoint
 def main():
     app.run(host="localhost", port=8000)
     print("Server running on  port 8000")
