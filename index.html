@@ -1,0 +1,116 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <style>
+      body {
+        width: 960px;
+        padding: 2rem;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .button {
+        position: relative;
+        padding: 8px 16px;
+        background: #360d56;
+        border: none;
+        outline: none;
+        border-radius: 2px;
+        cursor: pointer;
+      }
+
+      .button:active {
+        background: #360d56ba;
+      }
+
+      .button__text {
+        font: bold 20px "Quicksand", san-serif;
+        color: #ffffff;
+        transition: all 0.2s;
+      }
+
+      .button--loading .button__text {
+        visibility: hidden;
+        opacity: 0;
+      }
+
+      .button--loading::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        border: 4px solid transparent;
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: button-loading-spinner 1s ease infinite;
+      }
+
+      @keyframes button-loading-spinner {
+        from {
+          transform: rotate(0turn);
+        }
+
+        to {
+          transform: rotate(1turn);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <tr>
+      <td>
+        <h4>Please write an idea for a product:</h4>
+        <input
+          type="text"
+          name="prompt"
+          id="prompt"
+          maxlength="100"
+          size="100"
+        /><br /><br />
+        <button id="button" type="button" class="button">
+          <span class="button__text">Generate</span>
+        </button>
+        <div
+          style="display: flex; flex-direction: column; justify-content: center"
+          id="response"
+        ></div>
+      </td>
+    </tr>
+  </body>
+  <script>
+    $(document).ready(function () {
+      $("button").click(async function (event) {
+        this.classList.toggle("button--loading");
+        input = $('input[name="prompt"]').val();
+        var the_id = event.target.id;
+        await $.ajax({
+          url: "http://localhost:8000/generate",
+          type: "get",
+          data: { prompt: input },
+          success: function (response) {
+            $("#response").html(
+              "<h1>" +
+                response.name +
+                "</h1>" +
+                "<p>" +
+                response.description +
+                "</p>" +
+                '<image style="width: 512px; height: 512px; margin: 0 auto;" src=' +
+                response.image +
+                ">"
+            );
+          },
+          error: function (xhr) {
+            $("#response").html("<p> Something went wrong </p>");
+          },
+        });
+        this.classList.toggle("button--loading");
+      });
+    });
+  </script>
+</html>
