@@ -1,1 +1,1 @@
-## This is a resporitory for the GPT4All + stable Diffusion API tutorial
+## This is the resporitory for the GPT4All + Stable Diffusion API tutorial 
